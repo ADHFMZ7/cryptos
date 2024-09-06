@@ -2,7 +2,6 @@ package aes
 
 
 func generate_round_keys(secret_key int) {
-
 }
 
 
