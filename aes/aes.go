@@ -10,7 +10,6 @@ func generate_round_keys(secret_key int) {
 
 // Transformations
 
-
 func SubBytes(state [16]byte) [16]byte {
 
 	for ix, value := range state {
@@ -18,7 +17,6 @@ func SubBytes(state [16]byte) [16]byte {
 	}
 	return state
 }
-
 
 func ShiftRows(state [16]byte) [16]byte {
 
@@ -48,8 +46,29 @@ func ShiftRows(state [16]byte) [16]byte {
 	return state
 }
 
-func mixColumns() {
+func MixColumn(c0, c1, c2, c3 *byte) {
 
+	temp := [4]byte{ 0, 0, 0, 0 };
+
+	temp[0] = GFMul(0x02, *c0) ^ GFMul(0x03, *c1) ^ *c2 ^ *c3;
+	temp[1] = *c0 ^ GFMul(0x02, *c1) ^ GFMul(0x03, *c2) ^ *c3;
+	temp[2] = *c0 ^ *c1 ^ GFMul(0x02, *c2) ^ GFMul(0x03, *c3);
+	temp[3] = GFMul(0x03, *c0) ^ *c1 ^ *c2 ^ GFMul(0x02, *c3);
+
+	*c0 = temp[0]
+	*c1 = temp[1]
+	*c2 = temp[2]
+	*c3 = temp[3]
+
+}
+
+func MixColumns(state [16]byte) [16] byte {
+
+	for ix := 0; ix < 4; ix++ {
+		MixColumn(&state[0 + ix], &state[4 + ix], &state[8 + ix], &state[12 + ix])
+	}
+
+	return state
 }
 
 func addKey() {
@@ -67,6 +86,27 @@ func aesEncrypt (state [16]byte, key string) {
 }
 
 
-func gfAdd(a, b byte) {
-	
+func GFAdd(a, b byte) byte {
+	return a ^ b	
 }
+
+func GFMul(a, b byte) byte {
+	var result byte
+
+	for ix := 0; ix < 8; ix++ {
+
+		if (b & 1) != 0 {
+			result ^= a
+		}
+
+		if a & 0x80 != 0 {
+			a = (a << 1) ^ 0x1b 
+		} else {
+			a <<= 1
+		}
+
+		b >>= 1
+	}
+	return result
+}
+
