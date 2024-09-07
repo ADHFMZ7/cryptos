@@ -8,6 +8,8 @@ import (
 
 func main() {
 
+	fmt.Println("AES128 Encryption")
+
 	key := [16]byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
 
 	in := [16]byte{
@@ -15,15 +17,15 @@ func main() {
 		0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
 	}
 
-	schedule := aes.KeySchedule(key)
+	aes.PrintState(in)
+	fmt.Println()
 
-	for ix := range schedule {
-		fmt.Println("\n ", ix)
-		aes.PrintState(schedule[ix])
-		fmt.Println("\n ")
-	}
-
-	ciphertext := aes.Encrypt(in, schedule)
+	ciphertext := aes.Encrypt(in, key)
 
 	aes.PrintState(ciphertext)
+	fmt.Println()
+
+	encrypted := aes.Decrypt(ciphertext, key)
+	aes.PrintState(encrypted)
+
 }
