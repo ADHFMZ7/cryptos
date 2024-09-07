@@ -1,6 +1,9 @@
 package aes
 
-import "fmt"
+import (
+	"fmt"
+
+)
 
 func generate_round_keys(secret_key int) {
 
@@ -91,41 +94,88 @@ func RotWord(column [4]byte) [4]byte {
 	return column
 }
 
-func addKey() {
+func SubWord(column [4]byte) [4]byte {
 
+	for ix, val := range column {
+		column[ix] = sbox0[val]
+	}
+
+	return column
 }
 
-func AesKeySchedule(secretKey [16]byte) {
+func Rcon(column [4]byte, round int) [4]byte {
+
+	// if round > 11 {
+	// }
+
+	column[0] ^= rcon[round-1] 
+	return column
+}
+
+
+func AddKey(state, key [16]byte) [16]byte {
+
+	for ix, val := range key {
+		state[ix] ^= val
+	}
+	return state
+}
+
+func KeySchedule(secretKey [16]byte) [11][16]byte {
 
 	var keys_out [11][16]byte
 
 	keys_out[0] = secretKey
 
-	for ix := 1; ix <= 11; ix++ {
+	for round := 1; round < 11; round++ {
 
+		secretKey = keys_out[round - 1]
+
+		transform := [4]byte {secretKey[12], secretKey[13], secretKey[14], secretKey[15]} 
+		transform = RotWord(transform)
+		transform = SubWord(transform)
+		transform = Rcon(transform, round)
+
+		WordAdd([4]*byte{&secretKey[0], &secretKey[1], &secretKey[2], &secretKey[3]}, transform)
+
+		WordAdd([4]*byte{&secretKey[4], &secretKey[5], &secretKey[6], &secretKey[7]}, 
+		        [4]byte{secretKey[0], secretKey[1], secretKey[2], secretKey[3]} )
+		
+		WordAdd([4]*byte{&secretKey[8], &secretKey[9], &secretKey[10], &secretKey[11]}, 
+		        [4]byte{secretKey[4], secretKey[5], secretKey[6], secretKey[7]} )
+
+		WordAdd([4]*byte{&secretKey[12], &secretKey[13], &secretKey[14], &secretKey[15]}, 
+		        [4]byte{secretKey[8], secretKey[9], secretKey[10], secretKey[11]} )
+
+		keys_out[round] = secretKey
 	}
-
+	return keys_out
 }
 
-func aesEncrypt(state, keySchedule [16]byte) {
+func Encrypt(state [16]byte, keySchedule[11][16]byte ) [16]byte {
 
-	for ix := 0; ix < 9; ix++ {
+	state = AddKey(state, keySchedule[0])
+
+	for ix := 1; ix < 10; ix++ {
 
 		state = SubBytes(state)
 		state = ShiftRows(state)
 		state = MixColumns(state)
-		// state = AddKey(state, key)
+		state = AddKey(state, keySchedule[ix])
 
 	}
 
 	state = SubBytes(state)
 	state = ShiftRows(state)
-	// state = AddKey(state, key)
+	state = AddKey(state, keySchedule[10])
 
+	return state
 }
 
-func GFAdd(a, b byte) byte {
-	return a ^ b
+func WordAdd(a [4]*byte, b [4]byte) {
+	for ix, val := range b {
+		*a[ix] ^= val
+	}
 }
 
 func GFMul(a, b byte) byte {
