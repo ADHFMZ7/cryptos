@@ -157,7 +157,6 @@ func Encrypt(state [16]byte, keySchedule [11][16]byte) [16]byte {
 		state = shiftRows(state)
 		state = mixColumns(state)
 		state = addKey(state, keySchedule[ix])
-		PrintState(state)
 
 	}
 
