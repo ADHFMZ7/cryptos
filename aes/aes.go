@@ -2,12 +2,7 @@ package aes
 
 import (
 	"fmt"
-
 )
-
-func generate_round_keys(secret_key int) {
-
-}
 
 // Utility function to print state matrix in column-order
 func PrintState(state [16]byte) {
@@ -18,11 +13,12 @@ func PrintState(state [16]byte) {
 		}
 		fmt.Println()
 	}
+	fmt.Println()
 }
 
 // Transformations
 
-func SubBytes(state [16]byte) [16]byte {
+func subBytes(state [16]byte) [16]byte {
 
 	for ix, value := range state {
 		state[ix] = sbox0[value]
@@ -30,7 +26,7 @@ func SubBytes(state [16]byte) [16]byte {
 	return state
 }
 
-func ShiftRows(state [16]byte) [16]byte {
+func shiftRows(state [16]byte) [16]byte {
 
 	var temp [3]byte
 
@@ -58,7 +54,7 @@ func ShiftRows(state [16]byte) [16]byte {
 	return state
 }
 
-func MixColumn(column [4]*byte) {
+func mixColumn(column [4]*byte) {
 	temp := [4]byte{0, 0, 0, 0}
 
 	temp[0] = GFMul(0x02, *column[0]) ^ GFMul(0x03, *column[1]) ^ *column[2] ^ *column[3]
@@ -72,16 +68,16 @@ func MixColumn(column [4]*byte) {
 	*column[3] = temp[3]
 }
 
-func MixColumns(state [16]byte) [16]byte {
+func mixColumns(state [16]byte) [16]byte {
 
 	for ix := 0; ix < 4; ix++ {
-		MixColumn([4]*byte{&state[ix*4], &state[ix*4+1], &state[ix*4+2], &state[ix*4+3]})
+		mixColumn([4]*byte{&state[ix*4], &state[ix*4+1], &state[ix*4+2], &state[ix*4+3]})
 	}
 
 	return state
 }
 
-func RotWord(column [4]byte) [4]byte {
+func rotWord(column [4]byte) [4]byte {
 
 	var temp byte
 
@@ -94,7 +90,7 @@ func RotWord(column [4]byte) [4]byte {
 	return column
 }
 
-func SubWord(column [4]byte) [4]byte {
+func subWord(column [4]byte) [4]byte {
 
 	for ix, val := range column {
 		column[ix] = sbox0[val]
@@ -103,17 +99,16 @@ func SubWord(column [4]byte) [4]byte {
 	return column
 }
 
-func Rcon(column [4]byte, round int) [4]byte {
+func rconWord(column [4]byte, round int) [4]byte {
 
 	// if round > 11 {
 	// }
 
-	column[0] ^= rcon[round-1] 
+	column[0] ^= rcon[round-1]
 	return column
 }
 
-
-func AddKey(state, key [16]byte) [16]byte {
+func addKey(state, key [16]byte) [16]byte {
 
 	for ix, val := range key {
 		state[ix] ^= val
@@ -129,50 +124,51 @@ func KeySchedule(secretKey [16]byte) [11][16]byte {
 
 	for round := 1; round < 11; round++ {
 
-		secretKey = keys_out[round - 1]
+		secretKey = keys_out[round-1]
 
-		transform := [4]byte {secretKey[12], secretKey[13], secretKey[14], secretKey[15]} 
-		transform = RotWord(transform)
-		transform = SubWord(transform)
-		transform = Rcon(transform, round)
+		transform := [4]byte{secretKey[12], secretKey[13], secretKey[14], secretKey[15]}
+		transform = rotWord(transform)
+		transform = subWord(transform)
+		transform = rconWord(transform, round)
 
-		WordAdd([4]*byte{&secretKey[0], &secretKey[1], &secretKey[2], &secretKey[3]}, transform)
+		wordAdd([4]*byte{&secretKey[0], &secretKey[1], &secretKey[2], &secretKey[3]}, transform)
 
-		WordAdd([4]*byte{&secretKey[4], &secretKey[5], &secretKey[6], &secretKey[7]}, 
-		        [4]byte{secretKey[0], secretKey[1], secretKey[2], secretKey[3]} )
-		
-		WordAdd([4]*byte{&secretKey[8], &secretKey[9], &secretKey[10], &secretKey[11]}, 
-		        [4]byte{secretKey[4], secretKey[5], secretKey[6], secretKey[7]} )
+		wordAdd([4]*byte{&secretKey[4], &secretKey[5], &secretKey[6], &secretKey[7]},
+			[4]byte{secretKey[0], secretKey[1], secretKey[2], secretKey[3]})
 
-		WordAdd([4]*byte{&secretKey[12], &secretKey[13], &secretKey[14], &secretKey[15]}, 
-		        [4]byte{secretKey[8], secretKey[9], secretKey[10], secretKey[11]} )
+		wordAdd([4]*byte{&secretKey[8], &secretKey[9], &secretKey[10], &secretKey[11]},
+			[4]byte{secretKey[4], secretKey[5], secretKey[6], secretKey[7]})
+
+		wordAdd([4]*byte{&secretKey[12], &secretKey[13], &secretKey[14], &secretKey[15]},
+			[4]byte{secretKey[8], secretKey[9], secretKey[10], secretKey[11]})
 
 		keys_out[round] = secretKey
 	}
 	return keys_out
 }
 
-func Encrypt(state [16]byte, keySchedule[11][16]byte ) [16]byte {
+func Encrypt(state [16]byte, keySchedule [11][16]byte) [16]byte {
 
-	state = AddKey(state, keySchedule[0])
+	state = addKey(state, keySchedule[0])
 
 	for ix := 1; ix < 10; ix++ {
 
-		state = SubBytes(state)
-		state = ShiftRows(state)
-		state = MixColumns(state)
-		state = AddKey(state, keySchedule[ix])
+		state = subBytes(state)
+		state = shiftRows(state)
+		state = mixColumns(state)
+		state = addKey(state, keySchedule[ix])
+		PrintState(state)
 
 	}
 
-	state = SubBytes(state)
-	state = ShiftRows(state)
-	state = AddKey(state, keySchedule[10])
+	state = subBytes(state)
+	state = shiftRows(state)
+	state = addKey(state, keySchedule[10])
 
 	return state
 }
 
-func WordAdd(a [4]*byte, b [4]byte) {
+func wordAdd(a [4]*byte, b [4]byte) {
 	for ix, val := range b {
 		*a[ix] ^= val
 	}
