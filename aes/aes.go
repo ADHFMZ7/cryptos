@@ -1,23 +1,6 @@
 package aes
 
-import (
-	"fmt"
-)
-
-// Utility function to print state matrix in column-order
-func PrintState(state [16]byte) {
-	for i := 0; i < 4; i++ {
-		for j := 0; j < 4; j++ {
-			index := i + 4*j
-			fmt.Printf("%02x ", state[index])
-		}
-		fmt.Println()
-	}
-	fmt.Println()
-}
-
-// Transformations
-
+// S-box lookup table
 func subBytes(state [16]byte) [16]byte {
 
 	for ix, value := range state {
@@ -26,6 +9,7 @@ func subBytes(state [16]byte) [16]byte {
 	return state
 }
 
+// Inverse of subBytes
 func subBytesInv(state [16]byte) [16]byte {
 	for ix, value := range state {
 		state[ix] = sboxinv[value]
@@ -34,6 +18,7 @@ func subBytesInv(state [16]byte) [16]byte {
 
 }
 
+// Performs left circular shift on each row of the state matrix
 func shiftRows(state [16]byte) [16]byte {
 
 	var temp [3]byte
@@ -62,6 +47,7 @@ func shiftRows(state [16]byte) [16]byte {
 	return state
 }
 
+// Inverse of shiftRows
 func shiftRowsInv(state [16]byte) [16]byte {
 
 	var temp [3]byte
@@ -113,6 +99,7 @@ func mixColumns(state [16]byte) [16]byte {
 	return state
 }
 
+// Inverse of mixColumns
 func mixColumnsInv(state [16]byte) [16]byte {
 
 	for ix := 0; ix < 4; ix++ {
@@ -122,6 +109,7 @@ func mixColumnsInv(state [16]byte) [16]byte {
 	return state
 }
 
+// Inverse of mixColumn
 func mixColumnInv(column [4]*byte) {
 
 	temp := [4]byte{0, 0, 0, 0}
@@ -150,6 +138,7 @@ func rotWord(column [4]byte) [4]byte {
 	return column
 }
 
+// Substitutes each byte in a 4-byte column using the S-box lookup table
 func subWord(column [4]byte) [4]byte {
 
 	for ix, val := range column {
@@ -159,6 +148,7 @@ func subWord(column [4]byte) [4]byte {
 	return column
 }
 
+// Generates a round constant for the key schedule
 func rconWord(column [4]byte, round int) [4]byte {
 
 	// if round > 11 {
@@ -168,6 +158,7 @@ func rconWord(column [4]byte, round int) [4]byte {
 	return column
 }
 
+// Adds a 16-byte round key to a 16-byte state
 func addKey(state, key [16]byte) [16]byte {
 
 	for ix, val := range key {
@@ -176,6 +167,7 @@ func addKey(state, key [16]byte) [16]byte {
 	return state
 }
 
+// Expands a 16-byte secret key into 11 16-byte round keys
 func KeySchedule(secretKey [16]byte) [11][16]byte {
 
 	var keys_out [11][16]byte
@@ -207,6 +199,7 @@ func KeySchedule(secretKey [16]byte) [11][16]byte {
 	return keys_out
 }
 
+// Encrypts a 16-byte plaintext using a 16-byte private key
 func Encrypt(state [16]byte, privateKey [16]byte) [16]byte {
 
 	keySchedule := KeySchedule(privateKey)
@@ -229,6 +222,7 @@ func Encrypt(state [16]byte, privateKey [16]byte) [16]byte {
 	return state
 }
 
+// Decrypts a 16-byte ciphertext using a 16-byte private key
 func Decrypt(ciphertext [16]byte, privateKey [16]byte) [16]byte {
 
 	keySchedule := KeySchedule(privateKey)
@@ -248,12 +242,14 @@ func Decrypt(ciphertext [16]byte, privateKey [16]byte) [16]byte {
 	return ciphertext
 }
 
+// Addition of two words in GF(2^8)
 func wordAdd(a [4]*byte, b [4]byte) {
 	for ix, val := range b {
 		*a[ix] ^= val
 	}
 }
 
+// Multiplication in GF(2^8)
 func GFMul(a, b byte) byte {
 	var result byte
 

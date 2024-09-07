@@ -4,28 +4,25 @@ import (
 	"fmt"
 
 	"github.com/ADHFMZ7/cryptos/aes"
+	"github.com/ADHFMZ7/cryptos/util"
 )
 
 func main() {
 
 	fmt.Println("AES128 Encryption")
 
-	key := [16]byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+	key := util.HexToBytes("0001020a4935060708090a0b0c0d0e0f")
+	in := util.HexToBytes("0011223344550945f554314bbccddeef")
 
-	in := [16]byte{
-		0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-		0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
-	}
-
-	aes.PrintState(in)
+	util.PrintBytes(in)
 	fmt.Println()
 
 	ciphertext := aes.Encrypt(in, key)
 
-	aes.PrintState(ciphertext)
+	util.PrintBytes(ciphertext)
 	fmt.Println()
 
 	encrypted := aes.Decrypt(ciphertext, key)
-	aes.PrintState(encrypted)
+	util.PrintBytes(encrypted)
 
 }
