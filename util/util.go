@@ -1,6 +1,21 @@
 package util
 
-import "fmt"
+import (
+	"fmt"
+	"crypto/rand"
+	"math/big"
+)
+
+func GeneratePrime(bits int) *big.Int {
+
+	num, err := rand.Prime(rand.Reader, bits)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return num
+}
 
 func HexToBytes(hex string) [16]byte {
 	var bytes [16]byte

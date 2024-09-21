@@ -2,38 +2,30 @@ package rsa
 
 import (
   "math/big"
-  "crypto/rand"
+  "github.com/ADHFMZ7/cryptos/util"
 )
 
 type PublicKey struct {
-
-  
-
+  modulus, exponent *big.Int 
 }
 
-func GeneratePrime(bits int) *big.Int {
-
-  num, err := rand.Prime(rand.Reader, bits)
-
-  if err != nil {
-    panic(err)
-  }
-
-  return num
+type PrivateKey struct {
+  modulus, exponent *big.Int 
 }
 
+func GenerateKeypair(key_bits int) (PublicKey, PrivateKey) {
 
-func GenerateKeypair(key_bits int) (*big.Int, *big.Int) {
+  q := util.GeneratePrime(key_bits)
+  p := util.GeneratePrime(key_bits)
 
-  q := GeneratePrime(key_bits)
-  p := GeneratePrime(key_bits)
-
-  n := new(big.Int).Add(q, p)
+  n := new(big.Int).Add(q, p) // modulus
   t := totient(p, q)
-  e := 65537
+  e := big.NewInt(65537) // public exponent
 
+  d := e.ModInverse(e, t) // private exponent
+
+  return PublicKey{n, e}, PrivateKey{n, d}
   
-
 }
 
 func totient(p, q *big.Int) *big.Int {
@@ -52,15 +44,12 @@ func lcm(a, b *big.Int) *big.Int {
   return numerator.Div(numerator, new(big.Int).GCD(nil, nil, a, b))
 }
 
-func encrypt(message []byte, pk big.Int) ([]byte) {
+// func encrypt(message []byte, pk PublicKey) ([]byte) {
+func Encrypt(m *big.Int, pk PublicKey) *big.Int {
 
-   
-  
-
-
-  return make([]byte, 0) 
+  return new(big.Int).Exp(m, pk.exponent, pk.modulus)
 }
 
-func decrypt(ciphertext []byte, sk big.Int) ([]byte) {
-  return make([]byte, 0)
+func Decrypt(ciphertext *big.Int, sk PrivateKey) *big.Int {
+  return new(big.Int).Exp(ciphertext, sk.exponent, sk.modulus)
 }
