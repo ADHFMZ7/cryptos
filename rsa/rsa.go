@@ -18,11 +18,11 @@ func GenerateKeypair(key_bits int) (PublicKey, PrivateKey) {
   q := util.GeneratePrime(key_bits)
   p := util.GeneratePrime(key_bits)
 
-  n := new(big.Int).Add(q, p) // modulus
+  n := new(big.Int).Mul(q, p) // modulus
   t := totient(p, q)
   e := big.NewInt(65537) // public exponent
 
-  d := e.ModInverse(e, t) // private exponent
+  d := big.NewInt(0).ModInverse(e, t) // private exponent
 
   return PublicKey{n, e}, PrivateKey{n, d}
   
