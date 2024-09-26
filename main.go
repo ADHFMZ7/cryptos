@@ -2,39 +2,35 @@ package main
 
 import (
 	"fmt"
-	"math/big"
+	// "math/big"
 
-	// "github.com/ADHFMZ7/cryptos/rsa"
+	"github.com/ADHFMZ7/cryptos/rsa"
 	// "github.com/ADHFMZ7/cryptos/aes"
 	"github.com/ADHFMZ7/cryptos/util"
 )
 
 func main() {
 
-	var a *big.Int
-	a = util.StringEncode("Ahmad")
-	fmt.Printf("%x\n", a)
-	fmt.Println(util.StringDecode(a))
+	// var a *big.Int
+	// a = util.StringEncode("Ahmad")
+	// fmt.Printf("%x\n", a)
+	// fmt.Println(util.StringDecode(a))
 
-	// pub, priv := rsa.GenerateKeypair(4096)
-	//
+	pub, priv := rsa.GenerateKeypair(4096)
+
 	// fmt.Println("pub: ", pub)
 	// fmt.Println("priv: ", priv)
-	//
-	// message := big.NewInt(0)
-	//
-	// message.SetString("1025", 10)
-	// fmt.Println(message, "\n\n\n")
-	//
-	// ciphertext := rsa.Encrypt(message, pub)
-	// fmt.Println(ciphertext, "\n\n\n")
-	//
-	// output := rsa.Decrypt(ciphertext, priv)
-	// fmt.Println(output, "\n\n\n")
-	//
-	// fmt.Println("PRIVATE EXPONENT: ", priv.Exponent)
-	// fmt.Println("PUBLIC EXPONENT: ", pub.Exponent)
 
+	message := util.StringEncode("Ahmad Aldasouqi")
+	fmt.Println("Ahmad Aldasouqi")
+
+	ciphertext := rsa.Encrypt(message, pub)
+	// fmt.Println(ciphertext, "\n\n\n")
+
+	output := rsa.Decrypt(ciphertext, priv)
+	// fmt.Println(output, "\n\n\n")
+
+	fmt.Println(util.StringDecode(output))
 
 
 	// fmt.Println("AES128 Encryption")

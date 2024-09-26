@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"crypto/rand"
 	"math/big"
-	"strings"
+	// "strings"
 )
 
 func StringEncode(input string) *big.Int {
@@ -20,16 +20,16 @@ func StringEncode(input string) *big.Int {
 }
 
 func StringDecode(encoded_int *big.Int) string {
-
-	var b strings.Builder
+	// Estimate the number of bytes needed to store the encoded_int
+	byteLen := (encoded_int.BitLen() + 7) / 8
+	result := make([]byte, byteLen)
+	
 	mod := big.NewInt(0)
-
-	for len(encoded_int.Bits()) > 0 {
+	for i := byteLen - 1; i >= 0; i-- {
 		encoded_int.DivMod(encoded_int, big.NewInt(0xff + 1), mod)
-		b.WriteByte(mod.Bytes()[0])
-		fmt.Printf("%x %x\n", encoded_int, mod)
+		result[i] = mod.Bytes()[0]
 	}
-	return b.String()
+	return string(result)
 }
 
 func GeneratePrime(bits int) *big.Int {
