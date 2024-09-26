@@ -269,3 +269,8 @@ func GFMul(a, b byte) byte {
 	}
 	return result
 }
+
+
+// TODO: 
+// Add different opperating modes
+

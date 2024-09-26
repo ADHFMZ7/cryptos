@@ -5,13 +5,19 @@ import (
   "github.com/ADHFMZ7/cryptos/util"
 )
 
+// type Key interface {
+//   GetPEM() string
+// }
+
 type PublicKey struct {
-  modulus, exponent *big.Int 
+  Modulus, Exponent *big.Int 
 }
 
 type PrivateKey struct {
-  modulus, exponent *big.Int 
+  Modulus, Exponent *big.Int 
 }
+
+
 
 func GenerateKeypair(key_bits int) (PublicKey, PrivateKey) {
 
@@ -47,9 +53,9 @@ func lcm(a, b *big.Int) *big.Int {
 // func encrypt(message []byte, pk PublicKey) ([]byte) {
 func Encrypt(m *big.Int, pk PublicKey) *big.Int {
 
-  return new(big.Int).Exp(m, pk.exponent, pk.modulus)
+  return new(big.Int).Exp(m, pk.Exponent, pk.Modulus)
 }
 
 func Decrypt(ciphertext *big.Int, sk PrivateKey) *big.Int {
-  return new(big.Int).Exp(ciphertext, sk.exponent, sk.modulus)
+  return new(big.Int).Exp(ciphertext, sk.Exponent, sk.Modulus)
 }

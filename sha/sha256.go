@@ -2,6 +2,6 @@ package sha
 
 // Secure Hashing Algorithm
 
-func 
+func hash()
 
 
