@@ -18,7 +18,6 @@ type PrivateKey struct {
 }
 
 
-
 func GenerateKeypair(key_bits int) (PublicKey, PrivateKey) {
 
   q := util.GeneratePrime(key_bits)

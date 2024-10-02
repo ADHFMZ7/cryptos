@@ -199,8 +199,8 @@ func KeySchedule(secretKey [16]byte) [11][16]byte {
 	return keys_out
 }
 
-// Encrypts a 16-byte plaintext using a 16-byte private key
-func Encrypt(state [16]byte, privateKey [16]byte) [16]byte {
+// Encrypts a 16-byte block using a 16-byte private key
+func EncryptBlock(state [16]byte, privateKey [16]byte) [16]byte {
 
 	keySchedule := KeySchedule(privateKey)
 
