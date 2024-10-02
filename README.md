@@ -7,9 +7,9 @@ Simple implementations of common cryptography algorithms. Intended for education
 - RSA encryption
 
 ## Todo
-- [] Key generation scheme: passphrase -> symmetric key
-- [] Digital signature using rsa?
-- [] Elliptic Curve Cryptography
+- [ ] Key generation scheme: passphrase -> symmetric key
+- [ ] Digital signature using rsa?
+- [ ] Elliptic Curve Cryptography
 
 ## References
 - https://ntietz.com/blog/rsa-deceptively-simple/
