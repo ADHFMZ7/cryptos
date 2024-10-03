@@ -43,16 +43,16 @@ func GeneratePrime(bits int) *big.Int {
 	return num
 }
 
-func HexToBytes(hex string) [16]byte {
-	var bytes [16]byte
-	for i := 0; i < 16; i++ {
+func HexToBytes(hex string) []byte {
+	bytes := make([]byte, len(hex)/2)
+	for i := 0; i < len(hex)/2; i++ {
 		fmt.Sscanf(hex[2*i:2*i+2], "%x", &bytes[i])
 	}
 	return bytes
 }
 
 // Utility function to print state matrix in row-order
-func PrintBytes(state [16]byte) {
+func PrintBytes(state []byte) {
 	for _, val := range state {
 		fmt.Printf("%02x", val)
 	}

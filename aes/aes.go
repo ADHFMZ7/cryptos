@@ -223,7 +223,7 @@ func EncryptBlock(state [16]byte, privateKey [16]byte) [16]byte {
 }
 
 // Decrypts a 16-byte ciphertext using a 16-byte private key
-func Decrypt(ciphertext [16]byte, privateKey [16]byte) [16]byte {
+func DecryptBlock(ciphertext [16]byte, privateKey [16]byte) [16]byte {
 
 	keySchedule := KeySchedule(privateKey)
 
@@ -270,7 +270,4 @@ func GFMul(a, b byte) byte {
 	return result
 }
 
-
-// TODO: 
-// Add different opperating modes
 
