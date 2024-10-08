@@ -15,7 +15,7 @@ func main() {
 	fmt.Println("AES128 Encryption")
 
 	key := util.HexToBytes("68656C6C6F2D61657300000000000000")
-	in := util.HexToBytes("0011223344550945f554314bbccddeefaa")
+	in := []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()<>?,./;'[]{}:\"")
 
 	util.PrintBytes(in)
 
@@ -27,5 +27,5 @@ func main() {
 	fmt.Println()
 
 	decrypted := aes.DecryptECB(ciphertext, key)
-	util.PrintBytes(decrypted)
+	fmt.Println(string(decrypted))
 }

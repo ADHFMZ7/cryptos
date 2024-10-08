@@ -1,7 +1,5 @@
 package aes
 
-// Implements AES operating modes
-
 func EncryptECB(input, key []byte) []byte {
 
   padding := 16 - (len(input) % 16)
@@ -34,6 +32,38 @@ func DecryptECB(ciphertext, key []byte) []byte {
     }
   }
 
-
   return plaintext
+}
+
+func EncryptCBC(input, key, IV []byte) []byte {
+
+  padding := 16 - (len(input) % 16)
+  if padding != 16 {
+    for ix := 0; ix < padding; ix++ {
+      input = append(input, 0)
+    }
+  }
+
+  var ciphertext []byte
+
+  for ix := 0; ix < len(input); ix += 16 {
+
+    block := ([16]byte)(input[ix:ix+16])
+  
+    if ix == 0 {
+      for iy := range block {
+        block[iy] =^ IV[iy]
+      }
+    } else {
+      for iy := range block {
+        block[iy] =^ ciphertext[ix - 16 + iy]
+      }
+    }
+
+    for _, cipher_byte := range EncryptBlock(block, ([16]byte)(key)) {
+      ciphertext = append(ciphertext, cipher_byte)
+    }
+  }
+   
+  return ciphertext
 }
