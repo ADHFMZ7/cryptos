@@ -52,11 +52,11 @@ func EncryptCBC(input, key, IV []byte) []byte {
   
     if ix == 0 {
       for iy := range block {
-        block[iy] =^ IV[iy]
+        block[iy] ^= IV[iy]
       }
     } else {
       for iy := range block {
-        block[iy] =^ ciphertext[ix - 16 + iy]
+        block[iy] ^= ciphertext[ix - 16 + iy]
       }
     }
 
@@ -80,7 +80,7 @@ func DecryptCBC(ciphertext, key, IV []byte) []byte {
       if ix == 0 {
         plaintext[iy] ^= IV[iy]
       } else {
-        plaintext[iy] ^= ciphertext[ix - 16 + iy]
+        plaintext[ix + iy] ^= ciphertext[ix - 16 + iy]
       }
     }
   }

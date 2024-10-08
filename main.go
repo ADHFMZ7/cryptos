@@ -19,13 +19,15 @@ func main() {
 
 	util.PrintBytes(in)
 
-	ciphertext := aes.EncryptECB(in, key)
+	IV := []byte("ABCDEFGHIJKLMNOP")
+
+	ciphertext := aes.EncryptCBC(in, key, IV)
 
 	fmt.Println()
 	fmt.Println("\n ciphertext: ")
 	util.PrintBytes(ciphertext)
 	fmt.Println()
 
-	decrypted := aes.DecryptECB(ciphertext, key)
+	decrypted := aes.DecryptCBC(ciphertext, key, IV)
 	fmt.Println(string(decrypted))
 }
