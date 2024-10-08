@@ -67,3 +67,24 @@ func EncryptCBC(input, key, IV []byte) []byte {
    
   return ciphertext
 }
+
+func DecryptCBC(ciphertext, key, IV []byte) []byte {
+
+  var plaintext []byte
+
+  for ix := 0; ix < len(ciphertext); ix += 16 {
+    block := ([16]byte)(ciphertext[ix:ix+16])
+    for iy, plain_byte := range DecryptBlock(block, ([16]byte)(key)) {
+      plaintext = append(plaintext, plain_byte)
+
+      if ix == 0 {
+        plaintext[iy] ^= IV[iy]
+      } else {
+        plaintext[iy] ^= ciphertext[ix - 16 + iy]
+      }
+    }
+  }
+
+  return plaintext
+
+}
