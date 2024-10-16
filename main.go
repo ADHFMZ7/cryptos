@@ -3,7 +3,6 @@ package main
 import (
     "fmt"
     // "math/big"
-
     // "github.com/ADHFMZ7/cryptos/rsa"
     "github.com/ADHFMZ7/cryptos/aes"
     // "github.com/ADHFMZ7/cryptos/util"
@@ -26,12 +25,9 @@ func main() {
     header := data[:headerEnd]
     pixelData := data[headerEnd:]
 
-    key := []byte("0123456789abcdef") // Replace with a more secure key
+    key := []byte("0123456789abcdef") 
+    encryptedData := aes.EncryptECB(pixelData, key)
 
-    // Encrypt pixel data using ECB mode
-    encryptedData := aes.EncryptCBC(pixelData, key, key)
-
-    // Create new encrypted PPM file with the same header and the encrypted pixel data
     outputData := append(header, encryptedData...)
     err = ioutil.WriteFile(outputFile, outputData, 0644)
     if err != nil {
